@@ -23,6 +23,10 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+render = [
+    "render-sdk>=0.6.0",
+]
+
 dev = [
     "pytest>=8.3.0",
     "pytest-asyncio>=0.24.0",
@@ -51,4 +55,4 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["backend*"]
+include = ["backend*", "workflow*"]

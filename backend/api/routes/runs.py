@@ -5,7 +5,8 @@ from typing import Annotated
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from pydantic import BaseModel, Field
 
-from backend.api.deps import get_runner, get_store
+from backend.api.deps import get_runner, get_settings_dep, get_store
+from backend.config import Settings
 from backend.orchestrator.runner import PipelineRunner
 from backend.state.redis_store import RedisStore
 
@@ -38,10 +39,21 @@ async def create_run(
     background_tasks: BackgroundTasks,
     store: Annotated[RedisStore, Depends(get_store)],
     runner: Annotated[PipelineRunner, Depends(get_runner)],
+    settings: Annotated[Settings, Depends(get_settings_dep)],
 ) -> CreateRunResponse:
     run_id = str(uuid.uuid4())
     await store.init_run(run_id, body.repo_path, body.issue_hint)
-    background_tasks.add_task(runner.execute, run_id)
+
+    if settings.use_render_workflows:
+        from render_sdk import RenderAsync
+
+        render_client = RenderAsync()
+        await render_client.workflows.start_task(
+            settings.render_workflow_slug, [run_id]
+        )
+    else:
+        background_tasks.add_task(runner.execute, run_id)
+
     return CreateRunResponse(run_id=run_id, status="pending")
 
 

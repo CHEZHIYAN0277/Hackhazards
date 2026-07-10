@@ -1,0 +1,4 @@
+# Install the project with Render Workflow support.
+# This pulls all dependencies from pyproject.toml automatically,
+# including the [render] optional extra (render-sdk).
+.[render]

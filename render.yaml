@@ -1,0 +1,56 @@
+# ── render.yaml ─────────────────────────────────────────────────────
+# Defines the Web Service for Render Blueprints.
+#
+# NOTE: Render Workflows cannot be defined in render.yaml (not yet
+# supported by Blueprints).  The Workflow service must be created
+# manually via the Render Dashboard:
+#
+#   1. Dashboard → New + → Workflow
+#   2. Connect this repository
+#   3. Build Command:  chmod +x bin/render-build.sh && bin/render-build.sh
+#   4. Start Command:  python workflow/main.py
+#   5. Set the same envVars listed below
+#
+# The @app.task in workflow/main.py registers automatically on deploy.
+# ────────────────────────────────────────────────────────────────────
+
+services:
+  # ── Web Service (FastAPI API) ────────────────────────────────────
+  - type: web
+    name: sentinel-api
+    runtime: python
+    buildCommand: chmod +x bin/render-build.sh && bin/render-build.sh
+    startCommand: uvicorn backend.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      # ── LLM ───────────────────────────────────────────────────
+      - key: LLM_PROVIDER
+        value: mistral
+      - key: MISTRAL_API_KEY
+        sync: false            # set manually in Dashboard
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      # ── Redis ─────────────────────────────────────────────────
+      - key: REDIS_URL
+        sync: false
+      # ── GitHub ────────────────────────────────────────────────
+      - key: GITHUB_TOKEN
+        sync: false
+      - key: GITHUB_REPO_OWNER
+        sync: false
+      - key: GITHUB_REPO_NAME
+        value: vulnapi
+      - key: GITHUB_DRY_RUN
+        value: "true"
+      # ── Runtime ───────────────────────────────────────────────
+      - key: STUB_MODE
+        value: "false"
+      # ── Render Workflow integration ───────────────────────────
+      - key: USE_RENDER_WORKFLOWS
+        value: "true"
+      - key: RENDER_API_KEY
+        sync: false
+      - key: RENDER_WORKFLOW_SLUG
+        value: sentinel-workflow/run_repository_analysis
+      # ── Python ────────────────────────────────────────────────
+      - key: PYTHON_VERSION
+        value: "3.11.9"
