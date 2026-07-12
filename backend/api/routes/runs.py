@@ -59,23 +59,31 @@ async def create_run(
         from render_sdk import RenderAsync
 
         print("========== RENDER DEBUG ==========")
-        print("USE_RENDER_WORKFLOWS:", settings.use_render_workflows)
-        print("WORKFLOW_SLUG:", settings.render_workflow_slug)
-        print("RENDER_API_KEY exists:", "RENDER_API_KEY" in os.environ)
-        print(
-            "RENDER_API_KEY length:",
-            len(os.environ.get("RENDER_API_KEY", "")),
-        )
-        print("=================================")
+        print("USE_RENDER_WORKFLOWS :", settings.use_render_workflows)
+        print("WORKFLOW_SLUG        :", settings.render_workflow_slug)
+        print("API KEY LENGTH       :", len(settings.render_api_key))
+        print("==================================")
 
-        render_client = RenderAsync(
-            token=os.environ["RENDER_API_KEY"]
-        )
+        try:
+            render_client = RenderAsync(
+                token=settings.render_api_key
+            )
 
-        await render_client.workflows.start_task(
-            settings.render_workflow_slug,
-            [run_id],
-        )
+            await render_client.workflows.start_task(
+                settings.render_workflow_slug,
+                [run_id],
+            )
+
+            print(f"Workflow started successfully for run {run_id}")
+
+        except Exception as e:
+            print(f"Render Workflow failed: {e}")
+            print("Falling back to BackgroundTasks...")
+
+            background_tasks.add_task(
+                runner.execute,
+                run_id,
+            )
 
     else:
         background_tasks.add_task(
