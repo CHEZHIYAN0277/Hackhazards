@@ -1,4 +1,5 @@
 import asyncio
+import os
 import uuid
 from typing import Annotated
 
@@ -49,12 +50,23 @@ async def create_run(
     await store.init_run(run_id, repo, body.issue_hint)
 
     if settings.use_render_workflows:
-        from render_sdk import RenderAsync
+    from render_sdk import RenderAsync
 
-        render_client = RenderAsync()
-        await render_client.workflows.start_task(
-            settings.render_workflow_slug, [run_id]
-        )
+    print("========== RENDER DEBUG ==========")
+    print("USE_RENDER_WORKFLOWS:", settings.use_render_workflows)
+    print("WORKFLOW_SLUG:", settings.render_workflow_slug)
+    print("RENDER_API_KEY exists:", "RENDER_API_KEY" in os.environ)
+    print("RENDER_API_KEY length:", len(os.environ.get("RENDER_API_KEY", "")))
+    print("=================================")
+
+    render_client = RenderAsync(
+        token=os.environ["RENDER_API_KEY"]
+    )
+
+    await render_client.workflows.start_task(
+        settings.render_workflow_slug,
+        [run_id],
+    )
     else:
         background_tasks.add_task(runner.execute, run_id)
 
