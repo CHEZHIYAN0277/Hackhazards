@@ -7,7 +7,11 @@ LLMProvider = Literal["anthropic", "mistral"]
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="ignore",
+    )
 
     llm_provider: LLMProvider = "anthropic"
     anthropic_api_key: str = ""
@@ -21,7 +25,7 @@ class Settings(BaseSettings):
     github_dry_run: bool = True
     stub_mode: bool = True
     max_retries: int = 3
-    state_ttl_seconds: int = 604800  # 7 days
+    state_ttl_seconds: int = 604800
     mutmut_timeout_seconds: int = 60
     default_criticality: float = 0.4
 
@@ -33,9 +37,9 @@ class Settings(BaseSettings):
     always_llm_filenames: str = ""
 
     # Render Workflow integration
-use_render_workflows: bool = False
-render_api_key: str = ""
-render_workflow_slug: str = "hack-hazards/run_repository_analysis"
+    use_render_workflows: bool = False
+    render_api_key: str = ""
+    render_workflow_slug: str = "hack-hazards/run_repository_analysis"
 
     def llm_configured(self) -> bool:
         if self.llm_provider == "mistral":
