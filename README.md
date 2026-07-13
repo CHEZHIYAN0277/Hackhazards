@@ -317,22 +317,10 @@ Mergeability Score
 
 ---
 
-# 📄 License
-
-MIT
-
----
 
 # 👨‍💻 Author
 
 **Chelvachezhiyan S N**
-
-AI & Data Science Engineer
+**zkaushika G**
 
 ---
-
-## Built For
-
-**Render Hackathon**
-
-Sentinel demonstrates how Render's managed infrastructure can power autonomous, long-running AI agent systems capable of end-to-end software maintenance with minimal human intervention.
