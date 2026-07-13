@@ -1,59 +1,177 @@
-#  Autonomous Multi-Agent Bug Detection Backend
 
-FastAPI + LangGraph pipeline for autonomous bug detection, repair, validation, and GitHub PR creation.
+# Sentinel BugFix
 
-## Quick Start
+> Autonomous Multi-Agent Bug Detection, Repair & GitHub Pull Request Generation Platform
 
-```bash
-# 1. Create venv and install
-python -m venv .venv && source .venv/bin/activate
-pip install -e ".[dev]"
-python -m spacy download en_core_web_sm
-cp .env.example .env   # then set MISTRAL_API_KEY, STUB_MODE=false
+---
 
-# 2. Start Redis (pick one)
-brew services start redis          # macOS with Homebrew (no Docker needed)
-# OR: docker compose up -d         # if Docker is installed
+## Overview
 
-# 3. Start API (use venv uvicorn — not global shell PATH)
-source .venv/bin/activate
-uvicorn backend.main:app --reload --host 127.0.0.1 --port 8000
+Sentinel BugFix is an autonomous AI software engineering system that analyzes repositories, reproduces failures, investigates root causes, generates patches, validates them using automated testing and security scanning, and produces merge-ready GitHub Pull Requests.
 
-# 4. In another terminal — create a run
-curl -X POST http://127.0.0.1:8000/runs \
-  -H "Content-Type: application/json" \
-  -d '{"repo_path": "vulnapi"}'
+### Highlights
+
+- Multi-Agent Architecture (10+ agents)
+- LangGraph Orchestration
+- FastAPI Backend
+- Redis State Persistence
+- Semantic Intent Graph
+- Root Cause Investigation
+- Automated Patch Generation
+- Pytest Validation
+- Mutation Testing
+- Bandit + Semgrep Security Scanning
+- GitHub PR Automation
+- Live WebSocket Execution Timeline
+
+---
+
+## Architecture
+
+```text
+Repository
+   │
+   ▼
+A0 Repository Preparation
+   │
+   ▼
+A1 Semantic Mapper
+A2 Dependency Analyzer
+A3 Static Analysis
+   │
+   ▼
+A3.5 Reproduction Gate
+   │
+   ▼
+A4 Evidence Investigator
+   │
+   ▼
+A5 Blast Radius
+   │
+   ▼
+A6 Repair Planner
+   │
+   ▼
+A7 Code Generator
+   │
+   ▼
+A8 Mutation Validator
+   │
+   ▼
+A9 Security Rescan
+   │
+   ▼
+A10 Mergeability Router
+   │
+   ▼
+GitHub Pull Request
 ```
 
-If `uvicorn` is "command not found", either activate `.venv` first or run:
-`.venv/bin/uvicorn backend.main:app --reload --host 127.0.0.1 --port 8000`
+---
 
-## API
+## Tech Stack
 
-- `POST /runs` — start a pipeline run
-- `GET /runs/{run_id}` — run status
-- `GET /runs/{run_id}/sig` — Semantic Intent Graph
-- `GET /runs/{run_id}/events` — event history
-- `WS /ws/runs/{run_id}` — live agent timeline
-- `GET /health` — health check
+| Layer | Technologies |
+|------|--------------|
+| Backend | FastAPI |
+| AI | Mistral, Anthropic |
+| Orchestration | LangGraph |
+| Storage | Redis |
+| Validation | Pytest, Mutmut |
+| Security | Bandit, Semgrep |
+| Graphs | NetworkX |
+| NLP | spaCy |
 
-## Demo Target
+---
 
-The `vulnapi/` directory contains 5 seeded bugs aligned to agent innovations. See plan for details.
+## Installation
+
+```bash
+git clone https://github.com/<username>/sentinel-bugfix.git
+cd sentinel-bugfix
+
+python -m venv .venv
+source .venv/bin/activate
+
+pip install -e ".[dev]"
+
+python -m spacy download en_core_web_sm
+```
+
+---
 
 ## Environment
 
+```env
+LLM_PROVIDER=mistral
+MISTRAL_API_KEY=
+MISTRAL_MODEL=codestral-latest
 
-| Variable            | Description                                              |
-| ------------------- | -------------------------------------------------------- |
-| `LLM_PROVIDER`      | `anthropic` or `mistral` (default: `anthropic`)          |
-| `MISTRAL_API_KEY`   | Mistral API key (when `LLM_PROVIDER=mistral`)              |
-| `MISTRAL_MODEL`     | Mistral model id (default: `codestral-latest`)             |
-| `ANTHROPIC_API_KEY` | Anthropic API key (when `LLM_PROVIDER=anthropic`)        |
-| `ANTHROPIC_MODEL`   | Anthropic model id                                       |
-| `GITHUB_TOKEN`      | GitHub PAT for PR creation                               |
-| `REDIS_URL`         | Redis connection URL                                     |
-| `STUB_MODE`         | Use stub agents (no API keys needed)                     |
-| `GITHUB_DRY_RUN`    | Skip actual GitHub PR creation                           |
+ANTHROPIC_API_KEY=
+ANTHROPIC_MODEL=claude-sonnet-4
 
+REDIS_URL=redis://localhost:6379
 
+GITHUB_TOKEN=
+
+STUB_MODE=false
+GITHUB_DRY_RUN=true
+```
+
+---
+
+## Run
+
+```bash
+brew services start redis
+
+uvicorn backend.main:app --reload
+```
+
+Create a pipeline run:
+
+```bash
+curl -X POST http://127.0.0.1:8000/runs -H "Content-Type: application/json" -d '{"repo_path":"vulnapi"}'
+```
+
+---
+
+## API
+
+| Endpoint | Description |
+|----------|-------------|
+| POST /runs | Start pipeline |
+| GET /runs/{id} | Status |
+| GET /runs/{id}/sig | Semantic Intent Graph |
+| GET /runs/{id}/events | Event Timeline |
+| WS /ws/runs/{id} | Live Events |
+| GET /health | Health Check |
+
+---
+
+## Validation Pipeline
+
+Patch → Pytest → Mutation Testing → Bandit → Semgrep → Mergeability Score
+
+---
+
+## Roadmap
+
+- Docker sandbox
+- Multi-language support
+- Kubernetes deployment
+- IDE extension
+- Human review dashboard
+- Cloud deployment
+
+---
+
+## License
+
+MIT
+
+---
+
+## Author
+
+Chelvachezhiyan S N
